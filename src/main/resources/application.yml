@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    include: secret
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+      defer-datasource-initialization: true
+
