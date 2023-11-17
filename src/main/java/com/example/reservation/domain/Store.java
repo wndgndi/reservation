@@ -26,9 +26,11 @@ public class Store extends BaseEntity{
 
     private String description;  // 상점 설명
 
+    private String username;
+
     @ManyToOne
-    @JoinColumn(name = "partner_id")
-    private Partner partner;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Store(String name, String address, String description) {
         this.name = name;

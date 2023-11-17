@@ -2,6 +2,7 @@ package com.example.reservation.controller;
 
 import com.example.reservation.dto.StoreDto;
 import com.example.reservation.repository.StoreRepository;
+import com.example.reservation.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/store")
 public class StoreController {
 
-    private final StoreRepository storeRepository;
+    private final StoreService storeService;
 
     @PostMapping("/signup")
-    public void signup(@RequestBody StoreDto.Request request) {
-        storeRepository.save(request.toEntity(request));
+    public void register(@RequestBody StoreDto.Request request) {
     }
 }

@@ -1,6 +1,6 @@
 package com.example.reservation.controller;
 
-import com.example.reservation.dto.PartnerDto;
+import com.example.reservation.dto.UserDto;
 import com.example.reservation.service.AuthService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class AuthController {
     private final AuthService authService;
 
     // 파트너 가입 기능
-    @PostMapping("/manager/signup")
-    public ResponseEntity<PartnerDto.Response> ManagerSignup(@RequestBody @Valid PartnerDto.Request request) {
-        return ResponseEntity.ok(authService.partnerSignup(request));
+    @PostMapping("/user/signup")
+    public ResponseEntity<UserDto.Response> signup(@RequestBody @Valid UserDto.Request request) {
+        return ResponseEntity.ok(authService.signup(request));
     }
 }

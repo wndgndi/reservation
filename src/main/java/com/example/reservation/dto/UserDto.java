@@ -1,14 +1,18 @@
 package com.example.reservation.dto;
 
-import com.example.reservation.domain.Partner;
+import com.example.reservation.domain.User;
 import com.example.reservation.domain.Store;
+import com.example.reservation.domain.User;
+import com.example.reservation.domain.constants.Role;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-public class PartnerDto {
+public class UserDto {
     @Getter
     @Setter
     public static class Request {
@@ -22,8 +26,11 @@ public class PartnerDto {
         @NotNull
         private String password;
 
-        public Partner toEntity(PartnerDto.Request request) {
-            return new Partner(request.getName(), request.getUsername(), request.getPassword());
+        @Enumerated(EnumType.STRING)
+        private Role role;
+
+        public User toEntity(UserDto.Request request) {
+            return new User(request.getName(), request.getUsername(), request.getPassword(), request.getRole());
         }
     }
 
@@ -40,7 +47,7 @@ public class PartnerDto {
         }
     }
 
-    public static Response fromEntity(Partner partner) {
-        return new Response(partner.getName(), partner.getUsername());
+    public static Response fromEntity(User User) {
+        return new Response(User.getName(), User.getUsername());
     }
 }
