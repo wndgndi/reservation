@@ -28,6 +28,7 @@ public class User extends BaseEntity {
     private String name;    // 이름
     private String username;   // 아이디
     private String password;   // 비밀번호
+    private String phoneNumber; // 전화번호
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -35,11 +36,15 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<Store> stores;
 
-    public User(String name, String username, String password, Role role) {
+    public User(String name, String username, String password, String phoneNumber, Role role) {
         this.name = name;
         this.username = username;
         this.password = password;
+        this.phoneNumber = phoneNumber;
         this.role = role;
     }
 
+    public void updateRole(Role role) {
+        this.role = role;
+    }
 }

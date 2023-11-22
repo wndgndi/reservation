@@ -10,4 +10,7 @@ spring:
         format_sql: true
         highlight_sql: true
       defer-datasource-initialization: true
+jwt:
+  secret:
+
 

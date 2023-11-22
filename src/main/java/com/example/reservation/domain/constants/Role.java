@@ -4,6 +4,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum Role {
-    USER, PARTNER
+    ROLE_USER, ROLE_PARTNER
 
 }

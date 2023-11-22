@@ -16,4 +16,14 @@ public class TokenDto {
     private String refreshToken;
     private Long accessTokenExpiresIn;
 
+    @Getter
+    public static class Request {
+        private String accessToken;
+        private String refreshToken;
+
+        public Request(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+    }
 }

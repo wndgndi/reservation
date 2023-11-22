@@ -8,11 +8,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@ToString
 public class Store extends BaseEntity{
 
     @Id
@@ -26,13 +31,18 @@ public class Store extends BaseEntity{
 
     private String description;  // 상점 설명
 
-    private String username;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Store(String name, String address, String description) {
+    public Store(String name, String address, String description, User user) {
+        this.name = name;
+        this.address = address;
+        this.description = description;
+        this.user = user;
+    }
+
+    public void updateStore(String name, String address, String description) {
         this.name = name;
         this.address = address;
         this.description = description;
