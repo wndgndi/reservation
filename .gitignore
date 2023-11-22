@@ -36,3 +36,4 @@ src/main/resources/application-secret.yml
 
 ### VS Code ###
 .vscode/
+mylog.log
