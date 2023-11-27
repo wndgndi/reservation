@@ -22,7 +22,7 @@ public abstract class BaseEntity {
     @LastModifiedDate
     private String updatedDate;   // 수정 날짜
 
-    @PrePersist  // 지정된 포맷으로 날짜를 저장
+    @PrePersist  // 지정된 포맷으로 날짜를 저장 (ex: '2023년 11월 24일 (금) 16시 26분 27초')
     public void onPrePersist() {
         this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 (E) HH시 mm분 ss초"));
         this.updatedDate = createdDate;

@@ -1,5 +1,7 @@
 package com.example.reservation.domain;
 
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,17 +9,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString
-public class Store extends BaseEntity{
+public class Store extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +35,9 @@ public class Store extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<Reservation> reservations;
+
     public Store(String name, String address, String description, User user) {
         this.name = name;
         this.address = address;
@@ -46,4 +50,5 @@ public class Store extends BaseEntity{
         this.address = address;
         this.description = description;
     }
+
 }

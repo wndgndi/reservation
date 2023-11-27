@@ -9,6 +9,7 @@ import com.example.reservation.dto.UserDto.Request;
 import com.example.reservation.repository.RefreshTokenRepository;
 import com.example.reservation.repository.UserRepository;
 import com.example.reservation.security.TokenProvider;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -46,7 +47,6 @@ public class AuthService {
     }
 
     // 파트너 가입 서비스 기능
-    // TODO: 파트너 가입 수정
     @Transactional
     public TokenDto partnerSignup(UserDto.Request request) {
         User user = validatePartner(request);
@@ -56,6 +56,7 @@ public class AuthService {
         return getTokenDto(request);
     }
 
+    // 토큰 발급
     private TokenDto getTokenDto(Request request) {
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -71,6 +72,7 @@ public class AuthService {
         return tokenDto;
     }
 
+    // 토큰을 재발급
     @Transactional
     public TokenDto reissue(TokenDto.Request request) {
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
@@ -94,7 +96,7 @@ public class AuthService {
         return tokenDto;
     }
 
-    // 회원가입 검증
+    // 회원가입 검사
     private void validateUser(UserDto.Request request) {
         // 이미 존재하는 아이디일 경우, 에러를 던짐
         if(userRepository.existsByUsername(request.getUsername())) {
@@ -102,9 +104,10 @@ public class AuthService {
         }
     }
 
+    // 이미 가입된 파트너인지 검사
     private User validatePartner(UserDto.Request request) {
         User user = userRepository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+            .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
 
         if(user.getRole() == Role.ROLE_PARTNER) {
             throw new RuntimeException("이미 가입된 파트너입니다.");

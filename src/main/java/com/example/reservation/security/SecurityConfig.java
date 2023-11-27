@@ -1,7 +1,5 @@
 package com.example.reservation.security;
 
-import static org.hibernate.criterion.Restrictions.and;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +38,7 @@ public class SecurityConfig {
             .and()
             .authorizeRequests()
             .antMatchers("/**/signup", "/**/signin", "/store/search").permitAll()
+            .antMatchers(HttpMethod.POST, "/reservation").hasAnyRole("USER", "PARTNER")
             .antMatchers(HttpMethod.POST, "/store/**").hasRole("PARTNER")
             .and()
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
