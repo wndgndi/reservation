@@ -40,7 +40,6 @@ public class UserDto {
 
     @Getter
     public static class Response {
-        private long id;
         private String name;
         private String username;
         private String phoneNumber;

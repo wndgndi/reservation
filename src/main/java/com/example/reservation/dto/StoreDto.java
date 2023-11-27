@@ -43,6 +43,6 @@ public class StoreDto {
     }
 
     public static Response fromEntity(Store store) {
-        return new Response(store.getName(), store.getAddress(), store.getDescription(), store.getUser().getUsername());
+        return new Response(store.getName(), store.getAddress(), store.getDescription(), store.getUser().getName());
     }
 }

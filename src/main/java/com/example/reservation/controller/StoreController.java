@@ -19,34 +19,53 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/store")
+@RequestMapping
 public class StoreController {
 
     private final StoreService storeService;
 
-    @PostMapping("/register")
+    // 매장 등록
+    @PostMapping("/store")
     public ResponseEntity<StoreDto.Response> register(@RequestBody StoreDto.Request request) {
         return ResponseEntity.ok(storeService.register(request));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<StoreDto.Response> update(@PathVariable Long id, @RequestBody StoreDto.Request request) {
+    // 매장 조회
+    @GetMapping("/store/{id}")
+    public ResponseEntity<StoreDto.Response> getStore(@PathVariable Long id) {
+        return ResponseEntity.ok(storeService.getStore(id));
+    }
+
+    // 매장 수정
+    @PutMapping("/store/{id}")
+    public ResponseEntity<StoreDto.Response> update(@PathVariable Long id,
+        @RequestBody StoreDto.Request request) {
         return ResponseEntity.ok(storeService.update(id, request));
     }
 
-    @DeleteMapping("/delete/{id}")
+    // 매장 삭제
+    @DeleteMapping("/store/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         return ResponseEntity.ok(storeService.delete(id));
     }
 
-    @GetMapping("/search")
+    @PutMapping("/store/reservation/{reservationId}")
+    public ResponseEntity<String> decideReservation(@RequestBody String status, @PathVariable Long reservationId) {
+       return ResponseEntity.ok(storeService.decideReservation(status, reservationId));
+    }
+
+    // 매장명에 키워드를 포함한 매장 조회
+    @GetMapping("/stores")
     public ResponseEntity<List<StoreDto.Response>> getStoreInfo(@RequestParam String keyword) {
-        return ResponseEntity.ok(storeService.getStoreInfo(keyword));
+        return ResponseEntity.ok(storeService.getStores(keyword));
     }
 
     // 파트너가 여러개의 매장을 가지고 있을 경우, 모든 매장 조회
-    @GetMapping("/partner/{id}")
-    public ResponseEntity<List<StoreDto.Response>> getStores(@PathVariable Long id) {
-        return ResponseEntity.ok(storeService.getStores(id));
+    @GetMapping("/store/partner/{partnerId}")
+    public ResponseEntity<List<StoreDto.Response>> getStoresByPartner(
+        @PathVariable Long partnerId) {
+        return ResponseEntity.ok(storeService.getStoresByPartner(partnerId));
     }
+
+
 }
