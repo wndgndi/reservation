@@ -36,7 +36,7 @@ public class Store extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
-    private List<Reservation> reservations;
+    private List<Reservation> reservationList;
 
     public Store(String name, String address, String description, User user) {
         this.name = name;

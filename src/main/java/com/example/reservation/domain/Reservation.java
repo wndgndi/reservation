@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,9 @@ public class Reservation extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
+
+    @OneToOne(mappedBy = "reservation")
+    private Review review;
 
     public Reservation(LocalDateTime reservationTime, User user, Store store) {
         this.reservationTime = reservationTime;

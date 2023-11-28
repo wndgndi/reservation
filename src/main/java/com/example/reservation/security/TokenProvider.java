@@ -80,7 +80,7 @@ public class TokenProvider {
             .build();
     }
 
-    //
+
     public Authentication getAuthentication(String accessToken) {
         // 토큰을 복호화하여 토큰에 들어있는 정보를 꺼냄
         Claims claims = parseClaims(accessToken);

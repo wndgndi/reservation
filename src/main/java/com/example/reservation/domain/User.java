@@ -35,10 +35,10 @@ public class User extends BaseEntity {
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Store> stores;
+    private List<Store> storeList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Reservation> reservations;
+    private List<Reservation> reservationList;
 
     public User(String name, String username, String password, String phoneNumber, Role role) {
         this.name = name;
