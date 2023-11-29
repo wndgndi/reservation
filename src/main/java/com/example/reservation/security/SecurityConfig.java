@@ -38,7 +38,6 @@ public class SecurityConfig {
             .and()
             .authorizeRequests()
             .antMatchers("/**/signup", "/**/signin", "/store/search").permitAll()
-
             .antMatchers(HttpMethod.POST, "/review/**").hasRole("USER")
             .antMatchers(HttpMethod.PUT, "/review/**").hasRole("USER")
             .antMatchers(HttpMethod.DELETE, "/review").hasAnyRole("USER", "PARTNER")
