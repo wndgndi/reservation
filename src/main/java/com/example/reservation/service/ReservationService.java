@@ -3,16 +3,16 @@ package com.example.reservation.service;
 import com.example.reservation.domain.Reservation;
 import com.example.reservation.domain.Store;
 import com.example.reservation.domain.User;
+import com.example.reservation.domain.constants.ErrorCode;
 import com.example.reservation.domain.constants.ReservationStatus;
 import com.example.reservation.dto.ReservationDto;
 import com.example.reservation.dto.ReservationDto.Response;
+import com.example.reservation.exception.CustomException;
 import com.example.reservation.repository.ReservationRepository;
 import com.example.reservation.repository.StoreRepository;
 import com.example.reservation.repository.UserRepository;
 import com.example.reservation.security.SecurityUtil;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,11 +28,12 @@ public class ReservationService {
     // 예약 등록
     @Transactional
     public ReservationDto.Response makeReservation(ReservationDto.Request request, Long storeId) {
-        User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 매장입니다."));
+        User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(() -> new CustomException(
+            ErrorCode.USER_NOT_FOUND));
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         if (reservationRepository.findByReservationTimeAndStore(request.getReservationTime(), store).isPresent()) {
-            throw new RuntimeException("해당 시간은 이미 예약이 존재합니다.");
+            throw new CustomException(ErrorCode.ALREADY_EXIST_RESERVATION);
         }
 
         Reservation myReservation = reservationRepository.save(request.toEntity(request, user, store));
@@ -53,11 +54,11 @@ public class ReservationService {
 
     // 예약 삭제
     public Response deleteReservation(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         // 예약이 승인된 상태이고, 예약시간이 30분 이상 남지 않았다면, 예약 취소 불가
         if(reservation.getStatus() == ReservationStatus.CONFIRMED && LocalDateTime.now().isAfter(reservation.getReservationTime().minusMinutes(30))) {
-            throw  new RuntimeException("예약 시간 30분 전까지만 예약 취소가 가능합니다.");
+            throw  new CustomException(ErrorCode.CANCEL_RESERVATION_INVALID_TIME);
         }
         reservationRepository.deleteById(reservationId);
         return ReservationDto.fromEntity(reservation);
@@ -65,7 +66,8 @@ public class ReservationService {
 
     // 예약자 도착
     public Response arrive(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new CustomException(
+            ErrorCode.RESERVATION_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();   // 현재 시간
         LocalDateTime reservationTime = reservation.getReservationTime();    // 예약 시간
         boolean check = true;  // 메세지를 입력하기 위한 변수

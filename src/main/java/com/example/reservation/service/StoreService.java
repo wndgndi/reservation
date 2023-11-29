@@ -3,17 +3,18 @@ package com.example.reservation.service;
 import com.example.reservation.domain.Reservation;
 import com.example.reservation.domain.Store;
 import com.example.reservation.domain.User;
+import com.example.reservation.domain.constants.ErrorCode;
 import com.example.reservation.domain.constants.ReservationStatus;
 import com.example.reservation.dto.StoreDto;
 import com.example.reservation.dto.StoreDto.Request;
 import com.example.reservation.dto.StoreDto.Response;
+import com.example.reservation.exception.CustomException;
 import com.example.reservation.repository.ReservationRepository;
 import com.example.reservation.repository.StoreRepository;
 import com.example.reservation.repository.UserRepository;
 import com.example.reservation.security.SecurityUtil;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,8 @@ public class StoreService {
     // 매장 등록
     @Transactional
     public StoreDto.Response register(Request request) {
-        User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(() -> new CustomException(
+            ErrorCode.USER_NOT_FOUND));
         Store store = storeRepository.save(request.toEntity(request ,user));  // 매장을 저장할 때 점장을 등록
 
         return StoreDto.fromEntity(store);
@@ -39,13 +41,13 @@ public class StoreService {
     // 매장 조회
     @Transactional
     public StoreDto.Response getStore(Long id) {
-        return StoreDto.fromEntity(storeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 매장입니다.")));
+        return StoreDto.fromEntity(storeRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)));
     }
 
     // 매장 수정
     @Transactional
     public StoreDto.Response update(Long id, Request request) {
-        Store store = storeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 매장입니다."));
+        Store store = storeRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         store.updateStore(request.getName(), request.getAddress(), request.getDescription());
         return StoreDto.fromEntity(storeRepository.save(store));
@@ -68,7 +70,7 @@ public class StoreService {
     // 매장에서 예약을 승인할지 거절할지 결정
     @Transactional
     public String decideReservation(String status, Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("예약이 존재하지 않습니다."));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservation.updateStatus(ReservationStatus.from(status));
         return reservationService.reservationResult(ReservationStatus.from(status), reservation);
     }

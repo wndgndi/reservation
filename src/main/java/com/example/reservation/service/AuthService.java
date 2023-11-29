@@ -2,14 +2,15 @@ package com.example.reservation.service;
 
 import com.example.reservation.domain.RefreshToken;
 import com.example.reservation.domain.User;
+import com.example.reservation.domain.constants.ErrorCode;
 import com.example.reservation.domain.constants.Role;
 import com.example.reservation.dto.TokenDto;
 import com.example.reservation.dto.UserDto;
 import com.example.reservation.dto.UserDto.Request;
+import com.example.reservation.exception.CustomException;
 import com.example.reservation.repository.RefreshTokenRepository;
 import com.example.reservation.repository.UserRepository;
 import com.example.reservation.security.TokenProvider;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -76,16 +77,16 @@ public class AuthService {
     @Transactional
     public TokenDto reissue(TokenDto.Request request) {
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         Authentication authentication = tokenProvider.getAuthentication(request.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-            .orElseThrow(() -> new RuntimeException("로그아웃된 사용자입니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.LOGGED_OUT_USER));
 
         if(!refreshToken.getValue().equals(request.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.TOKEN_USER_MISMATCH);
         }
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
@@ -100,17 +101,17 @@ public class AuthService {
     private void validateUser(UserDto.Request request) {
         // 이미 존재하는 아이디일 경우, 에러를 던짐
         if(userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("이미 존재하는 아이디입니다.");
+            throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
         }
     }
 
     // 이미 가입된 파트너인지 검사
     private User validatePartner(UserDto.Request request) {
         User user = userRepository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ALREADY_EXIST_USER));
 
         if(user.getRole() == Role.ROLE_PARTNER) {
-            throw new RuntimeException("이미 가입된 파트너입니다.");
+            throw new CustomException(ErrorCode.ALREADY_EXIST_PARTNER);
         }
 
         return user;
