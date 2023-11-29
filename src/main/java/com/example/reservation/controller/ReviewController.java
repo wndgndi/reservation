@@ -22,30 +22,32 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // 예약 등록
+    // 리뷰 등록
     @PostMapping("/{reservationId}")
     public ResponseEntity<ReviewDto.Response> insertReview(@RequestBody ReviewDto.Request request, @PathVariable Long reservationId) {
         return ResponseEntity.ok(reviewService.insertReview(request, reservationId));
     }
 
-    // 예약 수정
+    // 리뷰 수정
     @PutMapping("/{reviewId}")
     public ResponseEntity<ReviewDto.Response> updateReview(@RequestBody ReviewDto.Request request, @PathVariable Long reviewId) {
         return ResponseEntity.ok(reviewService.updateReview(request, reviewId));
     }
 
-    // 예약 삭제
+    // 리뷰 삭제
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<ReviewDto.Response> deleteReview(@PathVariable Long reviewId) {
         return ResponseEntity.ok(reviewService.deleteReview(reviewId));
     }
 
-    @GetMapping("/{storeId}")
+    // 매장의 리뷰 조회
+    @GetMapping("/store/{storeId}")
     public ResponseEntity<List<Response>> getStoreReviews(@PathVariable Long storeId) {
         return ResponseEntity.ok(reviewService.getStoreReviews(storeId));
     }
 
-    @GetMapping("/{userId}")
+    // 회원이 작성한 리뷰들 조회
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<Response>> getUserReviews(@PathVariable Long userId) {
         return ResponseEntity.ok(reviewService.getUserReviews(userId));
     }

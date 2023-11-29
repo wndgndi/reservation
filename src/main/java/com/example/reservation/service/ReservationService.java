@@ -11,6 +11,7 @@ import com.example.reservation.repository.StoreRepository;
 import com.example.reservation.repository.UserRepository;
 import com.example.reservation.security.SecurityUtil;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +31,13 @@ public class ReservationService {
         User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 매장입니다."));
 
-        Reservation reservation = reservationRepository.save(request.toEntity(request, user, store));
+        if (reservationRepository.findByReservationTimeAndStore(request.getReservationTime(), store).isPresent()) {
+            throw new RuntimeException("해당 시간은 이미 예약이 존재합니다.");
+        }
 
-        return ReservationDto.fromEntity(reservation);
+        Reservation myReservation = reservationRepository.save(request.toEntity(request, user, store));
+
+        return ReservationDto.fromEntity(myReservation);
     }
 
     // 매장의 예약 승인/거절에 따른 결과 반환
@@ -49,6 +54,11 @@ public class ReservationService {
     // 예약 삭제
     public Response deleteReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+
+        // 예약이 승인된 상태이고, 예약시간이 30분 이상 남지 않았다면, 예약 취소 불가
+        if(reservation.getStatus() == ReservationStatus.CONFIRMED && LocalDateTime.now().isAfter(reservation.getReservationTime().minusMinutes(30))) {
+            throw  new RuntimeException("예약 시간 30분 전까지만 예약 취소가 가능합니다.");
+        }
         reservationRepository.deleteById(reservationId);
         return ReservationDto.fromEntity(reservation);
     }
@@ -73,5 +83,4 @@ public class ReservationService {
         return response;
     }
 
-    
 }

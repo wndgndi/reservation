@@ -19,49 +19,50 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/store")
 public class StoreController {
 
     private final StoreService storeService;
 
     // 매장 등록
-    @PostMapping("/store")
+    @PostMapping
     public ResponseEntity<StoreDto.Response> register(@RequestBody StoreDto.Request request) {
         return ResponseEntity.ok(storeService.register(request));
     }
 
     // 매장 조회
-    @GetMapping("/store/{id}")
-    public ResponseEntity<StoreDto.Response> getStore(@PathVariable Long id) {
-        return ResponseEntity.ok(storeService.getStore(id));
+    @GetMapping("/{storeId}")
+    public ResponseEntity<StoreDto.Response> getStore(@PathVariable Long storeId) {
+        return ResponseEntity.ok(storeService.getStore(storeId));
     }
 
     // 매장 수정
-    @PutMapping("/store/{id}")
-    public ResponseEntity<StoreDto.Response> update(@PathVariable Long id,
+    @PutMapping("/{storeId}")
+    public ResponseEntity<StoreDto.Response> update(@PathVariable Long storeId,
         @RequestBody StoreDto.Request request) {
-        return ResponseEntity.ok(storeService.update(id, request));
+        return ResponseEntity.ok(storeService.update(storeId, request));
     }
 
     // 매장 삭제
-    @DeleteMapping("/store/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(storeService.delete(id));
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<String> delete(@PathVariable Long storeId) {
+        return ResponseEntity.ok(storeService.delete(storeId));
     }
 
-    @PutMapping("/store/reservation/{reservationId}")
+    // 매장에서 예약을 승인할지 거절할지 결정
+    @PutMapping("/reservation/{reservationId}")
     public ResponseEntity<String> decideReservation(@RequestBody String status, @PathVariable Long reservationId) {
        return ResponseEntity.ok(storeService.decideReservation(status, reservationId));
     }
 
     // 매장명에 키워드를 포함한 매장 조회
-    @GetMapping("/stores")
+    @GetMapping("/search")
     public ResponseEntity<List<StoreDto.Response>> getStoreInfo(@RequestParam String keyword) {
         return ResponseEntity.ok(storeService.getStores(keyword));
     }
 
     // 파트너가 여러개의 매장을 가지고 있을 경우, 모든 매장 조회
-    @GetMapping("/store/partner/{partnerId}")
+    @GetMapping("/partner/{partnerId}")
     public ResponseEntity<List<StoreDto.Response>> getStoresByPartner(
         @PathVariable Long partnerId) {
         return ResponseEntity.ok(storeService.getStoresByPartner(partnerId));
