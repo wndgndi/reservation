@@ -67,12 +67,14 @@ public class ReviewService {
         return ReviewDto.fromEntity(review);
     }
 
+    // 매장 리뷰 조회
     public List<Response> getStoreReviews(Long storeId) {
         return reviewRepository.findByStoreId(storeId).stream()
             .map(ReviewDto::fromEntity)
             .collect(Collectors.toList());
     }
 
+    // 회원이 작성한 리뷰들 조회
     public List<Response> getUserReviews(Long userId) {
         return reviewRepository.findByUserId(userId).stream()
             .map(ReviewDto::fromEntity)

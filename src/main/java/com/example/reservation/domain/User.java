@@ -32,7 +32,7 @@ public class User extends BaseEntity {
     private String password;   // 비밀번호
     private String phoneNumber; // 전화번호
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)  // 권한
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)

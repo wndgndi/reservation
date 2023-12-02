@@ -80,20 +80,26 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
+        // Access Token 에서 회원 Id를 가져옴
         Authentication authentication = tokenProvider.getAuthentication(request.getAccessToken());
 
+        // 회원 Id를 기반으로 Refresh Token 가져옴
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
             .orElseThrow(() -> new CustomException(ErrorCode.LOGGED_OUT_USER));
 
+        // Refresh Token 값이 일치하는지 검사
         if(!refreshToken.getValue().equals(request.getRefreshToken())) {
             throw new CustomException(ErrorCode.TOKEN_USER_MISMATCH);
         }
 
+        // 새로운 토큰 생성
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
+        // db에 Refresh Token 정보 업데이트
         RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
         refreshTokenRepository.save(newRefreshToken);
 
+        // 토큰 발급
         return tokenDto;
     }
 
